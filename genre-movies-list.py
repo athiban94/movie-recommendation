@@ -8,18 +8,32 @@ headers = { 'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (K
 
 # site url
 siteURL = "https://www.allmovie.com"
+movieCorpusList = []
+def scrapePageContents(category, categoryLink):
+    print(categoryLink)
+    page = requests.get(categoryLink, headers=headers)
+    if page.status_code == 200:
+        print("succes")
+        soup = BeautifulSoup(page.content, 'html.parser')
+        pagenationNext = soup.select('div.pagination span.next a')
+
+        moviesList = soup.select("div.movie-highlights div.movie_row div.movie p.title a")
+        for movie in moviesList:
+            movieTuple = (category, movie.text.strip(), siteURL + movie["href"])
+            movieCorpusList.append(movieTuple)
+        if(pagenationNext):
+            for page in pagenationNext:
+                url = siteURL + page["href"]
+                scrapePageContents(category, url)
+        else:
+            print("End of category: " + category)
 
 def generateMovieCateoryTuples(categoryList):
-    movieCorpusList = []
     for category, categoryLink in categoryList.items():
-        page = requests.get(categoryLink, headers=headers)
-        if page.status_code == 200:
-            soup = BeautifulSoup(page.content, 'html.parser')
+        scrapePageContents(category, categoryLink)
 
-            moviesList = soup.select("div.movie-highlights div.movie_row div.movie p.title a")
-            for movie in moviesList:
-                movieTuple = (category, movie.text.strip(), siteURL + movie["href"])
-                movieCorpusList.append(movieTuple)
+    for element in movieCorpusList:
+        print(element)
     return movieCorpusList
 
 def saveMoviesInCSV(movieCorpusList):
@@ -32,6 +46,7 @@ def saveMoviesInCSV(movieCorpusList):
 if __name__ == "__main__":
     data = pd.read_csv("genres.csv", header=0)
     categoryList = dict(zip(data["Genre"].values.tolist(), data["link"].values.tolist()))
+    # generateMovieCateoryTuples(categoryList)
     entireMovieList = generateMovieCateoryTuples(categoryList)
     saveMoviesInCSV(entireMovieList)
 
