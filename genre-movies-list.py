@@ -37,7 +37,7 @@ def generateMovieCateoryTuples(categoryList):
     return movieCorpusList
 
 def saveMoviesInCSV(movieCorpusList):
-    with open('test.csv', 'w') as f:
+    with open('categoryMovieLinksList.csv', 'w') as f:
         writer = csv.writer(f, lineterminator='\n')
         for tup in movieCorpusList:
             writer.writerow(tup)
