@@ -8,6 +8,7 @@ from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 import requests                   
 from bs4 import BeautifulSoup 
+import csv
 import re
 
 def extract_source(url):
@@ -111,10 +112,10 @@ print(extract_data(extract_source(url_str2)))
 # In[ ]:
 
 
-import csv
+
 
 with open('movie10k.csv', 'w', newline = '') as f:  # Just use 'w' mode in 3.x
-    with open('ScrapeData.csv') as csv_file:
+    with open('categoryMovieLinksList.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         cnt=0
         seen = set()
